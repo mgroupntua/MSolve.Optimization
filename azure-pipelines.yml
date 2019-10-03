@@ -16,7 +16,6 @@ variables:
   Major: '1'
   Minor: '0'
   Patch: '$(Build.BuildId)'
-  testProject: 'tests/MGroup.*.Tests'
 
 steps:
 - task: DotNetCoreCLI@2
@@ -35,7 +34,6 @@ steps:
     organization: 'mgroupntua'
     scannerMode: 'MSBuild'
     projectKey: 'MSolve.Optimization'
-    extraProperties: 'sonar.cs.opencover.reportsPaths=$(Build.SourcesDirectory)/coverage/coverage.opencover.xml'
 
 
 - task: DotNetCoreCLI@2
@@ -47,10 +45,6 @@ steps:
     verbosityPack: 'Minimal'
     configuration: '$(buildConfiguration)'
 
-- script: |
-    dotnet test --logger trx --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=$(Build.SourcesDirectory)/coverage/ $(testProject)
-  displayName: 'Runs tests'
-
 
 - task: SonarCloudAnalyze@1
   displayName: "Performs SonarCloud Analysis"
@@ -60,16 +54,6 @@ steps:
   inputs:
     pollingTimeoutSec: '300'
 
-- task: PublishTestResults@2
-  inputs:
-    testRunner: VSTest
-    testResultsFiles: '**/*.trx'
-
-- task: PublishCodeCoverageResults@1
-  inputs:
-    summaryFileLocation: $(Build.SourcesDirectory)/coverage/Cobertura/Cobertura.xml
-    reportDirectory: $(Build.SourcesDirectory)/coverage/Cobertura
-    codecoverageTool: cobertura
 
 - task: DotNetCoreCLI@2
   name: dotnetPack
